@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 
 import numpy as np
@@ -118,13 +117,12 @@ def apply_depth(array: np.ndarray, plan: ResizePlan) -> np.ndarray:
         plan.source_width,
         plan.source_height,
     ):
-        os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
-        import cv2  # pylint: disable=import-outside-toplevel
-
-        array = cv2.resize(
-            array,
-            (plan.resized_width, plan.resized_height),
-            interpolation=cv2.INTER_NEAREST,
+        image = Image.fromarray(np.asarray(array, dtype=np.float32), mode="F")
+        array = np.asarray(
+            image.resize(
+                (plan.resized_width, plan.resized_height), Image.Resampling.NEAREST
+            ),
+            dtype=np.float32,
         )
     y0, x0 = plan.crop_y, plan.crop_x
     return np.asarray(

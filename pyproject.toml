@@ -8,7 +8,7 @@ license = "MIT"
 authors = [{ name = "World Labs" }]
 dependencies = [
     "numpy>=1.26,<3",
-    "opencv-python-headless>=4.10",
+    "openexr>=3.4.15,<3.5",
     "pillow>=10.4",
     "scipy>=1.14",
 ]

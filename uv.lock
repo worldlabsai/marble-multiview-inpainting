@@ -26,7 +26,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
-    { name = "opencv-python-headless" },
+    { name = "openexr" },
     { name = "pillow" },
     { name = "scipy" },
 ]
@@ -41,7 +41,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "numpy", specifier = ">=1.26,<3" },
-    { name = "opencv-python-headless", specifier = ">=4.10" },
+    { name = "openexr", specifier = ">=3.4.15,<3.5" },
     { name = "pillow", specifier = ">=10.4" },
     { name = "scipy", specifier = ">=1.14" },
 ]
@@ -136,22 +136,30 @@ wheels = [
 ]
 
 [[package]]
-name = "opencv-python-headless"
-version = "5.0.0.93"
+name = "openexr"
+version = "3.4.15"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/99/76b7c80252aa83c1af16393454aafd125a0287101afe8deb0a6821af0e30/opencv_python_headless-5.0.0.93.tar.gz", hash = "sha256:b82f9831daab90b725c7c1ee1b36cb5732c367096ac76d119e64e14eb70d5f3c", size = 81817738, upload-time = "2026-07-02T07:01:06.039Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/a3/8b57f9bef539c195363cf966bbdc02951d3ce5d0a9f612d262f7fe66caad/openexr-3.4.15.tar.gz", hash = "sha256:6c9a28a4f4089379c9c4fd301edaa4dba0ed315862c029f453690a8191370a47", size = 25673422, upload-time = "2026-08-21T23:13:29.49Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/7c/8c8097891c509d98cd128493835c95631c80be6a8f37ed9d25716c2e16f1/opencv_python_headless-5.0.0.93-cp37-abi3-macosx_13_0_arm64.whl", hash = "sha256:030ca5e0837a2963ab36ef896baa9767eb8d2b83353fb28af5a521e40dd8756f", size = 48322581, upload-time = "2026-07-02T05:50:34.207Z" },
-    { url = "https://files.pythonhosted.org/packages/90/8c/eab2ad388c3cbab2a350c10c2ef19ce6bd099240afc31789032c996bab52/opencv_python_headless-5.0.0.93-cp37-abi3-macosx_14_0_x86_64.whl", hash = "sha256:1e55af3abfb462eeeabe5c775f12bdb36216d8a93a3583d69e6bd6e1d6ba7d00", size = 34782894, upload-time = "2026-07-02T05:51:39.856Z" },
-    { url = "https://files.pythonhosted.org/packages/ec/78/afca939f40ffe2b2380bfa86f812b2f7d4acc5a27b27dc41b49cad7ce7b4/opencv_python_headless-5.0.0.93-cp37-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:10818d91510e05c04568ae12b5cd120779c70c01bf897b001a6221fe430df80f", size = 36521085, upload-time = "2026-07-02T06:55:24.429Z" },
-    { url = "https://files.pythonhosted.org/packages/2b/97/8170e9819764c47e436c130d3ff6cfb73b58f923eae9d3a03d8982b04aec/opencv_python_headless-5.0.0.93-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:09a872a157c1376ab922a69bbf22f9a95bcc7b658a9d8b436a60212b02b2eeb4", size = 56563598, upload-time = "2026-07-02T06:55:47.355Z" },
-    { url = "https://files.pythonhosted.org/packages/3a/98/1a28a7101e31801042b3098871a74b76c61581d328ef40774ff4edb53a56/opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:840bd717c21e5c11cadadc022a823315ea417f961213d06b4df010e019eb16f4", size = 39648433, upload-time = "2026-07-02T06:56:04.255Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/21/f6ef335f6e65724aa78b8d792b48d40a48c381715f1e62f5a5049e09d07e/opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:ed709fdf9aa0bd1f2ed8549e71d19449b03a675bb581eb292285f6861953be37", size = 61204038, upload-time = "2026-07-02T06:56:41.823Z" },
-    { url = "https://files.pythonhosted.org/packages/d0/8f/b8756467ea991449a293797f6b3fa80fcfdd29598a0a60d1cd5715b96e61/opencv_python_headless-5.0.0.93-cp37-abi3-win32.whl", hash = "sha256:c6bcd96b185975ea240d22cfdb15a1f6d080cc95264cfbe2621f21bb144d89b9", size = 35411237, upload-time = "2026-07-02T05:50:12.901Z" },
-    { url = "https://files.pythonhosted.org/packages/b8/88/763b967f7efd7226b82c9fae16d560cba049b1f0c036647e65c610fd636e/opencv_python_headless-5.0.0.93-cp37-abi3-win_amd64.whl", hash = "sha256:829717b6a95554f273e49e357cee3b3a2a26b6f4842fbc1bed2b45bdd8f87e0e", size = 43825962, upload-time = "2026-07-02T05:50:09.627Z" },
+    { url = "https://files.pythonhosted.org/packages/84/19/989052e5e870126ebc71470d82927c7cd22ac70f33018b2b63ecf8876177/openexr-3.4.15-cp312-cp312-macosx_10_15_universal2.whl", hash = "sha256:7520164c6906535c37bd938c9744d4d341c1e6af794d0d15d9517e4318702cda", size = 2132484, upload-time = "2026-08-21T23:12:39.574Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/b6/376a26457856e83a3e35b251187f8c672d5dda61baba24cb76f4089f904b/openexr-3.4.15-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:78570daa1bd3d230f423b9463eb89f1d772f043c6299a48b79d007def7356c92", size = 1133771, upload-time = "2026-08-21T23:12:41.114Z" },
+    { url = "https://files.pythonhosted.org/packages/37/c4/7236691cd3cd86f60bbd257b455e53b85fc1c9e0dfeafb0f9b46ad6e81b8/openexr-3.4.15-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:eb305b2d3a074a259bcf397f56799ed0947ffcafc0ea8f7666a01fbed4a01daa", size = 1022671, upload-time = "2026-08-21T23:12:42.533Z" },
+    { url = "https://files.pythonhosted.org/packages/90/24/df4a8bd023d84eff96bb46194b453f24f455ac5c3f9a40832f67c2d59a33/openexr-3.4.15-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:344b89740b45fe6390c4cb980036831ea33f4d85333bdfb1cfd7b67656c68afb", size = 1144630, upload-time = "2026-08-21T23:12:43.951Z" },
+    { url = "https://files.pythonhosted.org/packages/be/57/7d9aacd9884d7f5a2906c34b4c7d4480bff436049e3a234001829a49f5f9/openexr-3.4.15-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:5f81c38ec733259da31e257d964de5cfb4b4ef0b9aa1e7037b71fae709abe710", size = 1299460, upload-time = "2026-08-21T23:12:45.35Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/1e/3dab158cc185d27fc68adb73ae71d081f8ff3630a9d193b56af16be0fb32/openexr-3.4.15-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:0cd4a4dbcd76e8a09021d2d01d9add7fba71a637d2eb6fdbbb2f321f2e87e71c", size = 2146211, upload-time = "2026-08-21T23:12:46.847Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/23/5e07709cd60a207e3f38fccfd62aaca64b92492276a462ad7e261536ba04/openexr-3.4.15-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:b88f81bd7e3ae6f8d00316d5ad1bf59a9069ed8f49a25ca08ff0cd388007d7e4", size = 2331665, upload-time = "2026-08-21T23:12:48.493Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/75/1f0d0acc9fbd344d274253dc26876583f74cd619438e914c210faa1c5091/openexr-3.4.15-cp312-cp312-win_amd64.whl", hash = "sha256:7aa145813acfe10a83d6e89340349379828190b321608e69f2aee426e10c890b", size = 740197, upload-time = "2026-08-21T23:12:49.967Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/8a/89c957c9502e54140e03973f45949a70ae051b33ddc08cbe8722500fd2ce/openexr-3.4.15-cp313-cp313-macosx_10_15_universal2.whl", hash = "sha256:1e9155653be0708298cf3685949f27c9680ce7098e95d9d8c65667415dbc2def", size = 2132460, upload-time = "2026-08-21T23:12:51.593Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/0f/5fb250def71f574a4e7f08182f9166c77ba9385760aae565565008acb495/openexr-3.4.15-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:a8ec48bac5f88dcb5f34739dfc41bc4cc81aa5f83042cb6bbd7072af5b27042e", size = 1133721, upload-time = "2026-08-21T23:12:53.081Z" },
+    { url = "https://files.pythonhosted.org/packages/ab/40/32f0412f57f488a6c2b62283128e790fb09ec48f6add11a7eb1794256814/openexr-3.4.15-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:ac03f3cb7e274ad792b2f66df100f5605e9d586e6b3db0a2722e7c53a15acc42", size = 1022695, upload-time = "2026-08-21T23:12:54.645Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/0e/f66f823c694485ba0c2e79e08fd3c6ef30dc10698d59b5fb430ffad6a943/openexr-3.4.15-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:d5d62c37d0f6c1986d3a5b370b57c37acbc44f3b40806f1043465be0e2270e22", size = 1144474, upload-time = "2026-08-21T23:12:56.067Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/a4/decca134d677c4b4eaacf164f75ca85a33798dc157ece52a5b58be39a7b8/openexr-3.4.15-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:cf30abe5281418b1f038c853dcf8b3106ece69178033ea4846bb95845fd41b9c", size = 1299217, upload-time = "2026-08-21T23:12:57.429Z" },
+    { url = "https://files.pythonhosted.org/packages/17/5d/aa24f8803c0418659e963a8599cfc87371ab45a8359922da53f21ce23e27/openexr-3.4.15-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:34ac1c0d7cf288a9f96252170d981b8b79470b1e5a0172b1adece28b2e99e856", size = 2146265, upload-time = "2026-08-21T23:12:58.942Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/93/6830eb7bce2a756baef1be794de1344bd5495a18170676b8b7eaad028759/openexr-3.4.15-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:d5490f35abffb66709b9b5921a7bbc65e122bcb07524451db1de2ccf9598b2bb", size = 2331220, upload-time = "2026-08-21T23:13:00.715Z" },
+    { url = "https://files.pythonhosted.org/packages/39/a4/b336624f2049bbd2ebd8b2bbb51626103da98625a117660b07d788571080/openexr-3.4.15-cp313-cp313-win_amd64.whl", hash = "sha256:8486797567c3e41ea1ec78b64f6833fcb3e04404abe7e9adee4ef3f8e7582842", size = 740189, upload-time = "2026-08-21T23:13:02.348Z" },
 ]
 
 [[package]]

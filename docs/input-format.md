@@ -15,8 +15,10 @@ Each view requires:
 
 Paths are resolved relative to the manifest. `.npy`, `.npz`, and linear-depth
 `.exr` are supported. An NPZ may contain one array or an array named `depth`.
-For a multichannel EXR, the first decoded channel is used, matching Marble's
-linear-depth loader.
+For a one-channel EXR, that channel is used regardless of its name. For a
+multichannel EXR, the tool uses `R`, then `Y`, then `Z`, in that priority order;
+an EXR with none of those channels is rejected as ambiguous. Multipart and deep
+EXRs are not supported.
 
 ## Pixel grid
 
@@ -66,9 +68,9 @@ Depth is positive camera-space z-depth along the camera's forward axis, not
 Euclidean ray length. It uses the same scale as camera positions. Non-finite,
 zero, and negative values are invalid.
 
-OpenCV decodes EXR into top-to-bottom NumPy rows, so this tool does not apply the
-row flip needed by Three.js `EXRLoader` CPU arrays. Do not pre-flip an EXR for
-this tool.
+OpenEXR decodes image rows in their stored top-to-bottom order, so this tool does
+not apply the row flip needed by Three.js `EXRLoader` CPU arrays. Do not pre-flip
+an EXR for this tool.
 
 ## Edit-region masks
 

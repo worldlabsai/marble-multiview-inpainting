@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import struct
 from pathlib import Path
 from typing import Any
@@ -14,10 +13,6 @@ from PIL import Image
 
 from marble_inpainting.errors import MarbleInpaintError
 from marble_inpainting.models import Camera, Scene, View
-
-# OpenCV reads Marble's linear-depth EXR files. This switch must be set before
-# the first cv2 import in the process.
-os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
 
 
 def _resolve_file(base: Path, raw_path: Any, *, field: str) -> Path:
@@ -190,24 +185,34 @@ def load_depth(path: str | Path) -> np.ndarray:
                         f"NPZ must contain one array or a 'depth' array: {depth_path}"
                     )
         elif suffix == ".exr":
-            import cv2  # pylint: disable=import-outside-toplevel
+            import OpenEXR  # pylint: disable=import-outside-toplevel
 
-            depth = cv2.imread(
-                str(depth_path), cv2.IMREAD_ANYDEPTH | cv2.IMREAD_UNCHANGED
-            )
-            if depth is None:
-                raise MarbleInpaintError(f"OpenCV could not decode EXR: {depth_path}")
-            if depth.ndim == 3 and depth.shape[2] == 3:
-                depth = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)
-            elif depth.ndim == 3 and depth.shape[2] == 4:
-                depth = cv2.cvtColor(depth, cv2.COLOR_BGRA2RGBA)
+            with OpenEXR.File(str(depth_path), separate_channels=True) as exr_file:
+                if len(exr_file.parts) != 1:
+                    raise MarbleInpaintError(
+                        f"depth EXR must contain exactly one part: {depth_path}"
+                    )
+                channels = exr_file.channels()
+                if len(channels) == 1:
+                    depth = next(iter(channels.values())).pixels
+                else:
+                    channel_name = next(
+                        (name for name in ("R", "Y", "Z") if name in channels), None
+                    )
+                    if channel_name is None:
+                        available = ", ".join(sorted(channels))
+                        raise MarbleInpaintError(
+                            "multichannel depth EXR must contain R, Y, or Z; "
+                            f"found {available}: {depth_path}"
+                        )
+                    depth = channels[channel_name].pixels
         else:
             raise MarbleInpaintError(
                 f"unsupported depth format {suffix!r}; use .npy, .npz, or .exr"
             )
     except MarbleInpaintError:
         raise
-    except (OSError, ValueError) as exc:
+    except (OSError, RuntimeError, ValueError) as exc:
         raise MarbleInpaintError(f"could not read depth {depth_path}: {exc}") from exc
 
     depth = np.asarray(depth)

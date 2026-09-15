@@ -29,7 +29,7 @@ On the first run, `uv` creates a repository-local environment with the exact
 versions in `uv.lock`. Later runs reuse it.
 
 The demo generates a synthetic three-view RGBD scene and prepares it end to
-end. It uses NumPy depth files so it runs even where OpenCV cannot write EXR;
+end. It uses NumPy depth files to keep example generation fast and portable;
 the normal preparation path accepts `.exr`, `.npy`, and `.npz` depth. Inspect:
 
 ```text
