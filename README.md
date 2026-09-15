@@ -15,28 +15,52 @@ preprocessing service, require an API key, or require a GPU.
 > `atlasMasked` is an access-dependent preview. Use these outputs only if the
 > task appears in the API reference for your World Labs account.
 
-## Example
+## Example: one chair, several camera views
 
-The included demo has three posed RGBD views. In the center anchor view, the
-red panel is removed and its former location is marked as the edit region.
+Change a lounge chair's upholstery from terracotta to teal in one anchor image.
+The chair has a curved back, seat, and arms at different depths. As the camera
+moves, the projected edit region follows those surfaces. A foreground column
+blocks part of the chair from the right.
+
+![Camera orbit showing the chair and the projected anchor region moving behind a foreground column](docs/assets/demo/camera-orbit.gif)
+
+### 1. Edit and mark the anchor
+
+Supply the edited anchor and a white mask covering the changed upholstery.
+The original posed RGBD views provide the cameras and depth.
 
 | Original anchor | Edited anchor | Input edit region |
 | --- | --- | --- |
-| ![Original anchor showing a red panel](docs/assets/demo/input-original-anchor.png) | ![Edited anchor with the panel removed](docs/assets/demo/input-edited-anchor.png) | ![White edit-region mask over the removed panel](docs/assets/demo/input-edit-region.png) |
+| ![Original anchor with a terracotta lounge chair](docs/assets/demo/input-original-anchor.png) | ![Edited anchor with teal upholstery](docs/assets/demo/input-edited-anchor.png) | ![White edit-region mask covering the chair upholstery](docs/assets/demo/input-edit-region.png) |
 
-The tool lifts that one edit region into 3D and projects it into the other
-views. Cyan shows the user-authored anchor region; red shows automatically
-projected regions.
+### 2. Lift the edit into 3D
 
-![Projected edit regions across three views](docs/assets/demo/output-projected-regions.png)
+Depth tells the tool how far each marked pixel is from the camera. Combining
+depth with the anchor camera turns those pixels into points on the chair's 3D
+surface. The point cloud below is computed from those inputs.
 
-It then writes the grayscale keep masks expected by `atlasMasked`. White pixels
-keep the supplied RGB; black pixels let Marble fill. The edited anchor is fully
-trusted, so its keep mask is all white.
+![Anchor depth map and the lifted curved chair surface viewed from another angle](docs/assets/demo/depth-to-3d.png)
 
-| Projected view 00 | Trusted anchor | Projected view 02 |
-| --- | --- | --- |
-| ![Keep mask for projected view 00](docs/assets/demo/output-keep-view-00.png) | ![All-white keep mask for the trusted anchor](docs/assets/demo/output-keep-anchor.png) | ![Keep mask for projected view 02](docs/assets/demo/output-keep-view-02.png) |
+### 3. Project into each camera and export keep masks
+
+Each column below is a different camera. The rows show original inputs,
+prepared context with region overlays, and the actual exported keep masks.
+
+![Three camera views showing original RGB, projected edit regions, and exported grayscale keep masks; the right mask splits around the column](docs/assets/demo/multiview-output.png)
+
+Notice the right-hand mask: the column stays white because its depth places it
+in front of the chair. The anchor mask is entirely white because the complete
+edited image is trusted. Black regions in the other masks ask Marble to fill.
+
+Only surfaces visible in the anchor can be projected. Newly exposed sides of
+the chair may need a [manual correction](#correct-one-view-manually). Margin
+and feathering can extend a mask slightly beyond its depth-checked boundary;
+this exact-depth demo uses a 4-pixel margin and 2-pixel feather at 1280 x 720.
+
+All images above are deterministic synthetic inputs and preparation outputs.
+The teal anchor is supplied to the tool; the example does not run Marble
+inference. Run the demo below to reproduce the three-view result, or regenerate
+the README figures with `uv run python scripts/render_readme_demo.py`.
 
 ## Try it
 

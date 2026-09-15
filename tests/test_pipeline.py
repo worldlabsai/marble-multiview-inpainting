@@ -6,8 +6,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 from PIL import Image
+from scipy import ndimage
 
 from marble_inpainting.demo import run_demo
+from marble_inpainting.demo_scene import (
+    CAMERA_POSITIONS,
+    COLUMN,
+    demo_camera,
+    render_scene,
+)
 from marble_inpainting.errors import MarbleInpaintError
 from marble_inpainting.inspect_output import inspect_prepared
 from marble_inpainting.models import PrepareConfig
@@ -32,6 +39,15 @@ def test_synthetic_demo_runs_end_to_end(tmp_path) -> None:
     assert left.min() == 0 and left.max() == 255
     assert np.all(anchor == 255)
     assert right.min() == 0 and right.max() == 255
+
+    # Verify the actual exported mask keeps the interior of the foreground column.
+    target = render_scene(demo_camera(CAMERA_POSITIONS[2]))
+    column = Image.fromarray((target.object_ids == COLUMN).astype(np.uint8) * 255)
+    column = np.asarray(column.resize((1280, 720), Image.Resampling.NEAREST)) > 0
+    interior = np.asarray(ndimage.binary_erosion(column, iterations=12), dtype=bool)
+    assert interior.any()
+    assert np.all(right[interior] == 255)
+    assert not np.array_equal(left, right)
 
     report = json.loads((prepared / "report.json").read_text())
     assert [view["status"] for view in report["views"]] == [

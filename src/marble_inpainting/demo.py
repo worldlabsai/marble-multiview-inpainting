@@ -10,58 +10,18 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from marble_inpainting.demo_scene import (
+    CAMERA_POSITIONS,
+    CHAIR,
+    demo_camera,
+    render_scene,
+)
 from marble_inpainting.errors import MarbleInpaintError
 from marble_inpainting.models import PrepareConfig
 from marble_inpainting.pipeline import prepare_auto
 from marble_inpainting.scene_io import write_json
 
 DEMO_MARKER = ".marble-inpaint-demo-output"
-
-
-def _background(x_world: np.ndarray, y_world: np.ndarray) -> np.ndarray:
-    checker = ((np.floor(x_world * 2) + np.floor(y_world * 2)) % 2) != 0
-    horizontal = np.clip((x_world + 4.0) / 8.0, 0.0, 1.0)
-    vertical = np.clip((y_world + 2.5) / 5.0, 0.0, 1.0)
-    rgb = np.empty((*x_world.shape, 3), dtype=np.float32)
-    rgb[..., 0] = 55 + 35 * horizontal + checker * 16
-    rgb[..., 1] = 90 + 55 * vertical + checker * 12
-    rgb[..., 2] = 135 + 35 * (1 - horizontal) + checker * 10
-    return np.clip(rgb, 0, 255).astype(np.uint8)
-
-
-def _render_view(
-    *,
-    camera_x: float,
-    width: int,
-    height: int,
-    fx: float,
-    fy: float,
-    cx: float,
-    cy: float,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    yy, xx = np.indices((height, width), dtype=np.float32)
-    ray_x = (xx + 0.5 - cx) / fx
-    ray_y = (yy + 0.5 - cy) / fy
-
-    background_x = camera_x + ray_x * 5.0
-    background_y = ray_y * 5.0
-    rgb = _background(background_x, background_y)
-    background_only = rgb.copy()
-
-    object_x = camera_x + ray_x * 3.0
-    object_y = ray_y * 3.0
-    object_mask = (np.abs(object_x) <= 0.58) & (np.abs(object_y) <= 0.43)
-    depth = np.full((height, width), 5.0, dtype=np.float32)
-    depth[object_mask] = 3.0
-
-    object_color = np.empty_like(rgb)
-    object_color[..., 0] = 198
-    object_color[..., 1] = 74 + np.clip((object_y + 0.43) * 45, 0, 38).astype(np.uint8)
-    object_color[..., 2] = 54
-    rgb[object_mask] = object_color[object_mask]
-    border = object_mask & ~((np.abs(object_x) <= 0.53) & (np.abs(object_y) <= 0.38))
-    rgb[border] = np.array([245, 184, 72], dtype=np.uint8)
-    return rgb, depth, background_only
 
 
 def _write_demo_inputs(root: Path) -> tuple[Path, Path, Path]:
@@ -71,31 +31,20 @@ def _write_demo_inputs(root: Path) -> tuple[Path, Path, Path]:
     rgb_dir.mkdir(parents=True)
     depth_dir.mkdir(parents=True)
 
-    width, height = 640, 360
-    fx = fy = 450.0
-    cx, cy = width / 2, height / 2
-    positions = (-0.35, 0.0, 0.35)
     views = []
-    anchor_background: np.ndarray | None = None
+    anchor_edited: np.ndarray | None = None
     anchor_mask: np.ndarray | None = None
-    for index, camera_x in enumerate(positions):
+    for index, position in enumerate(CAMERA_POSITIONS):
         view_id = f"view_{index:02d}"
-        rgb, depth, background = _render_view(
-            camera_x=camera_x,
-            width=width,
-            height=height,
-            fx=fx,
-            fy=fy,
-            cx=cx,
-            cy=cy,
-        )
+        camera = demo_camera(position)
+        rendered = render_scene(camera)
         image_relative = Path("rgb") / f"{view_id}.png"
         depth_relative = Path("depth") / f"{view_id}.npy"
-        Image.fromarray(rgb, mode="RGB").save(source / image_relative)
-        np.save(source / depth_relative, depth)
+        Image.fromarray(rendered.rgb, mode="RGB").save(source / image_relative)
+        np.save(source / depth_relative, rendered.depth)
         if index == 1:
-            anchor_background = background
-            anchor_mask = depth == 3.0
+            anchor_edited = rendered.edited_rgb
+            anchor_mask = rendered.object_ids == CHAIR
         views.append(
             {
                 "id": view_id,
@@ -104,29 +53,15 @@ def _write_demo_inputs(root: Path) -> tuple[Path, Path, Path]:
                     "path": str(depth_relative),
                     "representation": "camera_z",
                 },
-                "camera": {
-                    "extrinsics": {
-                        "position": [camera_x, 0.0, 0.0],
-                        "quaternion": [0.0, 0.0, 0.0, 1.0],
-                        "coordinateSystem": "rdf",
-                    },
-                    "intrinsics": {
-                        "width": width,
-                        "height": height,
-                        "fx": fx,
-                        "fy": fy,
-                        "cx": cx,
-                        "cy": cy,
-                    },
-                },
+                "camera": camera.to_dict(),
             }
         )
 
-    if anchor_background is None or anchor_mask is None:  # pragma: no cover
+    if anchor_edited is None or anchor_mask is None:  # pragma: no cover
         raise RuntimeError("demo anchor was not generated")
     edited_path = source / "edited-anchor.png"
     mask_path = source / "edit-region.png"
-    Image.fromarray(anchor_background, mode="RGB").save(edited_path)
+    Image.fromarray(anchor_edited, mode="RGB").save(edited_path)
     Image.fromarray(anchor_mask.astype(np.uint8) * 255, mode="L").save(mask_path)
     manifest_path = source / "scene.json"
     write_json(manifest_path, {"schemaVersion": 1, "views": views})
@@ -163,9 +98,17 @@ def run_demo(output: str | Path, *, overwrite: bool = False) -> Path:
             anchor_view="view_01",
             edited_anchor=edited,
             edit_region=mask,
-            prompt="Remove the red panel and continue the patterned wall",
+            prompt="Change the lounge chair upholstery from terracotta to teal",
             output=staging / "prepared",
-            config=PrepareConfig(),
+            # Exact synthetic depth permits a tighter mask than noisy real scenes.
+            config=PrepareConfig(
+                max_points=24000,
+                depth_relative_tolerance=0.02,
+                footprint_radius_px=2,
+                closing_radius_px=1,
+                margin_px=4,
+                feather_px=2,
+            ),
         )
         (staging / DEMO_MARKER).write_text("marble-inpaint-demo-v1\n", encoding="utf-8")
         if destination.exists():
