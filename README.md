@@ -29,7 +29,8 @@ On the first run, `uv` creates a repository-local environment with the exact
 versions in `uv.lock`. Later runs reuse it.
 
 The demo generates a synthetic three-view RGBD scene and prepares it end to
-end. Inspect:
+end. It uses NumPy depth files so it runs even where OpenCV cannot write EXR;
+the normal preparation path accepts `.exr`, `.npy`, and `.npz` depth. Inspect:
 
 ```text
 demo-output/prepared/previews/contact-sheet.png
@@ -375,10 +376,10 @@ uv run ruff check .
 uv run pyright
 ```
 
-Tests cover mask polarity, PNG encoding, RDF/RUB camera conventions,
-pixel-center projection, depth occlusion, crop/resize intrinsics, deterministic
-sampling, the all-white anchor mask, overwrite safety, manual mode, and the full
-synthetic demo.
+Tests cover mask polarity, PNG encoding, EXR decoding, RDF/RUB camera
+conventions, pixel-center projection, depth occlusion, crop/resize intrinsics,
+deterministic sampling, the all-white anchor mask, overwrite safety, manual
+mode, and the full synthetic demo.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 

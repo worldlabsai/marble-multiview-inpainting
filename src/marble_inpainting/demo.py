@@ -78,9 +78,6 @@ def _write_demo_inputs(root: Path) -> tuple[Path, Path, Path]:
     views = []
     anchor_background: np.ndarray | None = None
     anchor_mask: np.ndarray | None = None
-    os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
-    import cv2  # pylint: disable=import-outside-toplevel
-
     for index, camera_x in enumerate(positions):
         view_id = f"view_{index:02d}"
         rgb, depth, background = _render_view(
@@ -93,10 +90,9 @@ def _write_demo_inputs(root: Path) -> tuple[Path, Path, Path]:
             cy=cy,
         )
         image_relative = Path("rgb") / f"{view_id}.png"
-        depth_relative = Path("depth") / f"{view_id}.exr"
+        depth_relative = Path("depth") / f"{view_id}.npy"
         Image.fromarray(rgb, mode="RGB").save(source / image_relative)
-        if not cv2.imwrite(str(source / depth_relative), depth):
-            raise RuntimeError(f"could not write demo EXR: {depth_relative}")
+        np.save(source / depth_relative, depth)
         if index == 1:
             anchor_background = background
             anchor_mask = depth == 3.0

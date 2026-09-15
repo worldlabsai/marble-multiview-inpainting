@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-import os
+import base64
+from pathlib import Path
 
 import numpy as np
 
 from marble_inpainting.masks import keep_mask_from_fill, rasterize_fill_region
 from marble_inpainting.scene_io import load_depth, png_header, save_grayscale_png
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def _decode_fixture(name: str, destination: Path) -> None:
+    encoded = (FIXTURES / f"{name}.b64").read_text(encoding="ascii")
+    destination.write_bytes(base64.b64decode(encoded))
 
 
 def test_keep_mask_polarity_and_feather() -> None:
@@ -43,31 +51,17 @@ def test_rasterization_expands_projected_points() -> None:
     assert not region[10, 14]
 
 
-def test_linear_depth_exr_round_trip(tmp_path) -> None:
-    os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
-    import cv2
-
+def test_linear_depth_exr_fixture(tmp_path) -> None:
     expected = np.arange(24, dtype=np.float32).reshape(4, 6) + 1
     path = tmp_path / "depth.exr"
-    assert cv2.imwrite(str(path), expected)
+    _decode_fixture("depth.exr", path)
     actual = load_depth(path)
     np.testing.assert_allclose(actual, expected)
 
 
 def test_multichannel_exr_uses_red_channel(tmp_path) -> None:
-    os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
-    import cv2
-
     expected = np.arange(12, dtype=np.float32).reshape(3, 4) + 1
-    bgr = np.stack(
-        (
-            np.full_like(expected, 100),
-            np.full_like(expected, 50),
-            expected,
-        ),
-        axis=-1,
-    )
     path = tmp_path / "rgb-depth.exr"
-    assert cv2.imwrite(str(path), bgr)
+    _decode_fixture("rgb-depth.exr", path)
     actual = load_depth(path)
     np.testing.assert_allclose(actual, expected)
