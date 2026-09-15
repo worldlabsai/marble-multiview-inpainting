@@ -75,6 +75,13 @@ cd marble-multiview-inpainting
 On the first run, `uv` creates a repository-local environment with the exact
 versions in `uv.lock`. Later runs reuse it.
 
+To regenerate the demo in the same directory, add `--overwrite`, or choose a
+new output directory:
+
+```bash
+./marble-inpaint demo --output demo-output/ --overwrite
+```
+
 The demo generates a synthetic three-view RGBD scene and prepares it end to
 end. It uses NumPy depth files to keep example generation fast and portable;
 the normal preparation path accepts `.exr`, `.npy`, and `.npz` depth. Inspect:
@@ -280,6 +287,11 @@ Check the contact sheet for all of the following:
 - Images and masks remain pixel-aligned after normalization.
 - Every output mask is an 8-bit, single-channel grayscale PNG.
 
+If the fill region spills onto foreground objects, try reducing `--margin-px`
+and `--feather-px` when running `prepare`, then check that the intended edit
+remains fully covered. If leakage persists, verify camera/depth alignment or
+supply a [manual mask override](#correct-one-view-manually).
+
 ### Correct one view manually
 
 Draw a white edit-region mask for the problematic view on its original input
@@ -349,7 +361,12 @@ in `scene.json`.
 ## Python API
 
 The complete pipeline and its individual stages are importable from the cloned
-repository:
+repository. Save the following snippet as `example.py`, update the input paths
+for your scene, and run it from the repository root with:
+
+```bash
+uv run --no-dev python example.py
+```
 
 ```python
 from marble_inpainting import PrepareConfig, prepare_auto

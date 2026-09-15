@@ -7,4 +7,4 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec uv run --project "$repo_dir" --frozen marble-inpaint "$@"
+exec uv run --project "$repo_dir" --frozen --no-dev marble-inpaint "$@"

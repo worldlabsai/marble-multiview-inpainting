@@ -5,5 +5,5 @@ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     exit 127
 }
 
-uv run --project $PSScriptRoot --frozen marble-inpaint @args
+uv run --project $PSScriptRoot --frozen --no-dev marble-inpaint @args
 exit $LASTEXITCODE
