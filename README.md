@@ -15,6 +15,29 @@ preprocessing service, require an API key, or require a GPU.
 > `atlasMasked` is an access-dependent preview. Use these outputs only if the
 > task appears in the API reference for your World Labs account.
 
+## Example
+
+The included demo has three posed RGBD views. In the center anchor view, the
+red panel is removed and its former location is marked as the edit region.
+
+| Original anchor | Edited anchor | Input edit region |
+| --- | --- | --- |
+| ![Original anchor showing a red panel](docs/assets/demo/input-original-anchor.png) | ![Edited anchor with the panel removed](docs/assets/demo/input-edited-anchor.png) | ![White edit-region mask over the removed panel](docs/assets/demo/input-edit-region.png) |
+
+The tool lifts that one edit region into 3D and projects it into the other
+views. Cyan shows the user-authored anchor region; red shows automatically
+projected regions.
+
+![Projected edit regions across three views](docs/assets/demo/output-projected-regions.png)
+
+It then writes the grayscale keep masks expected by `atlasMasked`. White pixels
+keep the supplied RGB; black pixels let Marble fill. The edited anchor is fully
+trusted, so its keep mask is all white.
+
+| Projected view 00 | Trusted anchor | Projected view 02 |
+| --- | --- | --- |
+| ![Keep mask for projected view 00](docs/assets/demo/output-keep-view-00.png) | ![All-white keep mask for the trusted anchor](docs/assets/demo/output-keep-anchor.png) | ![Keep mask for projected view 02](docs/assets/demo/output-keep-view-02.png) |
+
 ## Try it
 
 Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/), then:
