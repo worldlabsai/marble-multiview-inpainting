@@ -1,0 +1,47 @@
+[project]
+name = "marble-multiview-inpainting"
+version = "0.1.0"
+description = "Open-source tools for preparing consistent multiview inputs for Marble inpainting."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "World Labs" }]
+dependencies = [
+    "numpy>=1.26,<3",
+    "opencv-python-headless>=4.10",
+    "pillow>=10.4",
+    "scipy>=1.14",
+]
+
+[project.scripts]
+marble-inpaint = "marble_inpainting.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/marble_inpainting"]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.405",
+    "pytest>=8.3",
+    "ruff>=0.12",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.12"
+typeCheckingMode = "basic"
