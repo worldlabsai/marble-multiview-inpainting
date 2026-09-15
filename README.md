@@ -2,7 +2,7 @@
 
 Local, open-source input preparation for Marble multiview inpainting.
 
-The Marble 5 `atlasMasked` API accepts an RGB image, a grayscale keep mask, and
+The Marble `atlasMasked` API accepts an RGB image, a grayscale keep mask, and
 a camera for every view. Authoring the same edit region independently in every
 view is tedious and easy to get wrong. This repository lets you mark the edit
 once in an anchor view, then uses the scene's depth and cameras to project that
